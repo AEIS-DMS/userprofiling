@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Traits\ConsumeExternalService;
 
-class UserService
+class DocumentService
 {
     use ConsumeExternalService;
 
@@ -15,14 +15,20 @@ class UserService
     public $baseUri;
 
     /**
-     * Authorization secret to pass to project api
+     * Authorization secret to pass to document api
      * @var string
      */
     public $secret;
 
     public function __construct()
     {
-        $this->baseUri = config('base-url.userrole_url');
+        $this->baseUri = config('base-url.documents_url');
         $this->secret = '';
+    }
+
+    public function obtainDocumentsByTeamMember($payload)
+    {
+        $queryString = http_build_query($payload);
+        return $this->performRequest('GET', 'documents-by-team-member?' . $queryString);
     }
 }
