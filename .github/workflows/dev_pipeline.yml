@@ -27,14 +27,14 @@ jobs:
         run: |-
           gcloud secrets versions access latest --secret=${{ vars.DEV_SERVICE_NAME }} --format='value(payload.data)' > .env
           cat .env
-          echo "$GCLOUD_SERVICE_KEY" > ${{ vars.KEY }}.json
-          gcloud auth configure-docker ${{ vars.REGISTRY }}
-          docker build -t ${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }} . 
-          docker push "${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }}"
+      #     echo "$GCLOUD_SERVICE_KEY" > ${{ vars.KEY }}.json
+      #     gcloud auth configure-docker ${{ vars.REGISTRY }}
+      #     docker build -t ${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }} . 
+      #     docker push "${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }}"
 
-      - name: Add IAM policy
-        run: |-
-          gcloud --quiet run services add-iam-policy-binding --region=${{ vars.REGION }} --member=allUsers --role=roles/run.invoker ${{ vars.DEV_SERVICE_NAME }} --project=${{ vars.PROJECT }}
-      - name: Deploy
-        run: |-
+      # - name: Add IAM policy
+      #   run: |-
+      #     gcloud --quiet run services add-iam-policy-binding --region=${{ vars.REGION }} --member=allUsers --role=roles/run.invoker ${{ vars.DEV_SERVICE_NAME }} --project=${{ vars.PROJECT }}
+      # - name: Deploy
+      #   run: |-
           gcloud run deploy ${{ vars.DEV_SERVICE_NAME }} --image ${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }} --region=${{ vars.REGION }} --platform managed --allow-unauthenticated --service-account=${{ vars.SERVICE_ACCOUNT }} --project=${{ vars.PROJECT }}
