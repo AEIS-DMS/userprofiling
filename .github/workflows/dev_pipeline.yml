@@ -21,16 +21,16 @@ jobs:
       - name: 'Set up Cloud SDK'
         uses: 'google-github-actions/setup-gcloud@v1'
 
-      # - name: Build
-      #   env:
-      #     GCLOUD_SERVICE_KEY: ${{ secrets.GCLOUD_SERVICE_KEY }}
-      #   run: |-
-      #     gcloud secrets versions access latest --secret=dev-userprofilling --format='value(payload.data)' > .env
-      #     cat .env
-      #     echo "$GCLOUD_SERVICE_KEY" > ${{ vars.KEY }}.json
-      #     gcloud auth configure-docker ${{ vars.REGISTRY }}
-      #     docker build -t ${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }} . 
-      #     docker push "${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }}"
+      - name: Build
+        env:
+          GCLOUD_SERVICE_KEY: ${{ secrets.GCLOUD_SERVICE_KEY }}
+        run: |-
+          #gcloud secrets versions access latest --secret=dev-userprofilling --format='value(payload.data)' > .env
+          #cat .env
+          echo "$GCLOUD_SERVICE_KEY" > ${{ vars.KEY }}.json
+          gcloud auth configure-docker ${{ vars.REGISTRY }}
+          docker build -t ${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }} . 
+          docker push "${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }}"
 
       # - name: Add IAM policy
       #   run: |-
