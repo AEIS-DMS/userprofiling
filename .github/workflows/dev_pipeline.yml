@@ -25,10 +25,10 @@ jobs:
         env:
           GCLOUD_SERVICE_KEY: ${{ secrets.GCLOUD_SERVICE_KEY }}
         run: |-
+          gcloud secrets versions access latest --secret=${{ vars.DEV_SERVICE_NAME }} --format='value(payload.data)' > .env
+          cat .env
           echo "$GCLOUD_SERVICE_KEY" > ${{ vars.KEY }}.json
           gcloud auth configure-docker ${{ vars.REGISTRY }}
-          gcloud secrets versions access latest --secret=dev-userprofilling --format='value(payload.data)' > .env
-          cat .env
           docker build -t ${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }} . 
           docker push "${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }}"
 
