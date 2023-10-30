@@ -65,9 +65,14 @@ class TeamMemberController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, string $id)
     {
-        //
+        try {
+            $params = $request->all();
+            return $this->userService->obtainUser($params, $id);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
     }
 
     /**

@@ -25,7 +25,7 @@ class UserService
         $this->baseUri = config('base-url.userrole_url');
         $this->secret = '';
     }
-    
+
     public function createUser($request)
     {
         return $this->performRequest('POST', 'create',  $request);
@@ -40,5 +40,11 @@ class UserService
     public function updateUser($request, $id)
     {
         return $this->performRequest('PUT', "update/{$id}", $request);
+    }
+
+    public function obtainUser($request , $id)
+    {
+        //$queryString = http_build_query($request->all());
+        return $this->performRequest('GET', "show/{$id}");
     }
 }
