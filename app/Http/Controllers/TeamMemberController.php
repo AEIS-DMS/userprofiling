@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Services\DocumentService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -14,18 +15,30 @@ class TeamMemberController extends Controller
      */
     public $documentService;
 
-    public function __construct(DocumentService $documentService)
+    /**
+     * The service to consume the documents micro-service
+     * @var UserService
+     */
+    public $userService;
+
+    public function __construct(DocumentService $documentService, UserService $userService)
     {
         $this->documentService = $documentService;
+        $this->userService = $userService;
     }
 
 
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        try {
+            $params     = $request->all();
+            return $this->userService->obtainUsers($params);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
     }
 
     /**
@@ -41,7 +54,12 @@ class TeamMemberController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            $params = $request->all();
+            return $this->userService->createUser($params);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
     }
 
     /**
@@ -63,9 +81,14 @@ class TeamMemberController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        try {
+            $params = $request->all();
+            return $this->userService->updateUser($params, $id);
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), $e->getCode());
+        }
     }
 
     /**
@@ -77,7 +100,7 @@ class TeamMemberController extends Controller
     }
 
     /**
-     * Get the list of documents based on requested project or folder
+     * Get the list of documents based on requested team member
      */
     public function getDocumentsByTeamMember(Request $request)
     {
