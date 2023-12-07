@@ -47,4 +47,13 @@ class UserService
         //$queryString = http_build_query($request->all());
         return $this->performRequest('GET', "show/{$id}");
     }
+
+    public function profileUpdate($request)
+    {
+        if (!empty($request['file'])) {
+            return $this->sendFileWithRequest('POST', 'profile-update',  $request);
+        } else {
+            return $this->performRequest('POST', 'profile-update',  $request);
+        }
+    }
 }
