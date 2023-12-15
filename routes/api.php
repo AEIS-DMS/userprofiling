@@ -23,4 +23,3 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 Route::apiResource('team-member', TeamMemberController::class);
 Route::get('get-document-by-team-member', [TeamMemberController::class, 'getDocumentsByTeamMember']);
 Route::post('profile-update', [UserProfilingController::class, 'profileUpdate']); 
-
