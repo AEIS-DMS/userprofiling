@@ -26,10 +26,34 @@ class UserService
         $this->secret = '';
     }
 
-    public function getUserListBasedOnGroup($id, $page)
+    public function createUser($request)
     {
-        $pageNumber = ['page' => $page];
-        $queryString = http_build_query($pageNumber);
-        return $this->performRequest('GET', "user-list/{$id}?" . $queryString);
+        return $this->performRequest('POST', 'create',  $request);
+    }
+
+    public function obtainUsers($request)
+    {
+        $queryString = http_build_query($request);
+        return $this->performRequest('GET', 'list?' . $queryString);
+    }
+
+    public function updateUser($request, $id)
+    {
+        return $this->performRequest('PUT', "update/{$id}", $request);
+    }
+
+    public function obtainUser($request , $id)
+    {
+        //$queryString = http_build_query($request->all());
+        return $this->performRequest('GET', "show/{$id}");
+    }
+
+    public function profileUpdate($request)
+    {
+        if (!empty($request['file'])) {
+            return $this->sendFileWithRequest('POST', 'profile-update',  $request);
+        } else {
+            return $this->performRequest('POST', 'profile-update',  $request);
+        }
     }
 }

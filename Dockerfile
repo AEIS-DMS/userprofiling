@@ -44,6 +44,8 @@ RUN composer install
 
 RUN chown -R www-data:www-data vendor/ && chown -R www-data:www-data storage/
 
+RUN php artisan route:cache && php artisan route:clear && php artisan config:cache && php artisan cache:clear && php artisan config:clear
+
 EXPOSE 80
 
 CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
