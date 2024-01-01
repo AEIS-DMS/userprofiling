@@ -6,7 +6,7 @@ on:
 jobs:
   setup-build:
     name: Setup, Build
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     container: google/cloud-sdk:latest
     environment: stage
     steps:
