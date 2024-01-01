@@ -1,40 +1,29 @@
-name: Build and Deploy to Cloud Run
+name: Execute Commands on GCP Compute Engine Instance
+
 on:
   push:
     branches:
       - staging
+
 jobs:
-  setup-build:
-    name: Setup, Build
-    runs-on: ubuntu-latest
-    container: google/cloud-sdk:latest
-    environment: stage
+  execute-commands-on-instance:
+    runs-on: self-hosted
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - id: 'auth'
-        name: 'Authenticate to Google Cloud'
-        uses: 'google-github-actions/auth@v1'
-        with:
-          credentials_json: '${{ secrets.GCLOUD_SERVICE_KEY }}'
-
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v1'
-
-      - name: Build
-        env:
-          GCLOUD_SERVICE_KEY: ${{ secrets.GCLOUD_SERVICE_KEY }}
-        run: |-
-          gcloud secrets versions access latest --secret=${{ vars.SERVICE_NAME }} --format='value(payload.data)' > .env
-          cat .env
-          echo "$GCLOUD_SERVICE_KEY" > ${{ vars.KEY }}.json
-          gcloud auth configure-docker ${{ vars.REGISTRY }}
-          docker build -t ${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }} . 
-          docker push "${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }}"
-
-      - name: Add IAM policy
-        run: |-
-          gcloud --quiet run services add-iam-policy-binding --region=${{ vars.REGION }} --member=allUsers --role=roles/run.invoker ${{ vars.SERVICE_NAME }} --project=${{ vars.PROJECT }}
-      - name: Deploy
-        run: |-
-          gcloud run deploy ${{ vars.SERVICE_NAME }} --image ${{ vars.REGISTRY }}/${{ vars.IMAGE_NAME }} --region=${{ vars.REGION }} --platform managed --allow-unauthenticated --service-account=${{ vars.SERVICE_ACCOUNT }} --project=${{ vars.PROJECT }}
+    - name: Updating code on VM
+      uses: appleboy/ssh-action@v1.0.1
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: |
+          cd application/userprofiling && \
+          git pull origin staging && \
+          composer install && \
+          composer dumpautoload && \
+          php artisan route:cache && \
+          php artisan route:clear && \
+          php artisan config:cache && \
+          php artisan cache:clear && \
+          php artisan config:clear
